@@ -42,6 +42,12 @@ Projeto que visa implementar os aplicativos de mercado para observabilidade e mo
 - https://grafana.com/docs/grafana/latest/getting-started/get-started-grafana-prometheus/
 - https://medium.com/xp-inc/monitorando-aplica%C3%A7%C3%B5es-docker-com-prometheus-e-grafana-593f507fc17
 
+### Build Compose
+
+```bash
+git pull && docker compose --env-file .env up -d --build --force-recreate
+```
+
 ### Verifying Services
 
 Jaeger UI: http://localhost:16686
