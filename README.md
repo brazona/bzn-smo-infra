@@ -41,3 +41,9 @@ Projeto que visa implementar os aplicativos de mercado para observabilidade e mo
 
 - https://grafana.com/docs/grafana/latest/getting-started/get-started-grafana-prometheus/
 - https://medium.com/xp-inc/monitorando-aplica%C3%A7%C3%B5es-docker-com-prometheus-e-grafana-593f507fc17
+
+### Verifying Services
+
+Jaeger UI: http://localhost:16686
+Prometheus: http://localhost:9090
+Grafana: http://localhost:3000 (User: admin, Password: admin)
