@@ -54,7 +54,7 @@ services:
       - "9200:9200"
       - "9300:9300"
     volumes:
-      - vol-el:/usr/share/elasticsearch/data/
+      - vol-el-local:/usr/share/elasticsearch/data/
       - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
     environment:
       - discovery.type=single-node
@@ -78,7 +78,7 @@ services:
     volumes:
       - ./elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
       - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - vol-ls:/usr/share/logstash/data
+      - vol-ls-local/usr/share/logstash/data
 
     networks:
       - bzn-network
@@ -94,7 +94,7 @@ services:
       - "5601:5601"
     volumes:
       - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-      - vol-kb:/usr/share/kibana/data
+      - vol-kb-local:/usr/share/kibana/data
     networks:
       - bzn-network
     restart: always  
@@ -102,9 +102,9 @@ services:
       - elasticsearch
 
 volumes:
-  vol-el: {}
-  vol-ls: {}
-  vol-kb: {}
+  vol-el-local:
+  vol-ls-local:
+  vol-kb-local:
   
 networks:
   bzn-network:

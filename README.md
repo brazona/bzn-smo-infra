@@ -53,3 +53,5 @@ git pull && docker compose --env-file .env up -d --build --force-recreate
 Jaeger UI: http://localhost:16686
 Prometheus: http://localhost:9090
 Grafana: http://localhost:3000 (User: admin, Password: admin)
+
+Kibana: http://localhost:5601/
