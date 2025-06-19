@@ -45,7 +45,67 @@ services:
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD} 
     depends_on:
-      - prometheus  
+      - prometheus
+  elasticsearch:
+    container_name: ${ELASTIC_CONTAINER_NAME}
+    hostname: ${ELASTIC_CONTAINER_NAME}
+    image: ${ELASTIC_IMAGE}
+    ports:
+      - "9200:9200"
+      - "9300:9300"
+    volumes:
+      - vol-el:/usr/share/elasticsearch/data/
+      - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
+    environment:
+      - discovery.type=single-node
+      - http.host=0.0.0.0
+      - transport.host=0.0.0.0
+      - xpack.security.enabled=false
+      - xpack.monitoring.enabled=false
+      - cluster.name=elasticsearch
+      - bootstrap.memory_lock=true
+    networks:
+      - bzn-network
+    restart: always  
+
+  logstash:
+    container_name: ${LOGSTASH_CONTAINER_NAME}
+    hostname: ${LOGSTASH_CONTAINER_NAME}
+    image: ${LOGSTASH_IMAGE}
+    ports:
+      - "5044:5044"
+      - "9600:9600"
+    volumes:
+      - ./elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
+      - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
+      - vol-ls:/usr/share/logstash/data
+
+    networks:
+      - bzn-network
+    restart: always  
+    depends_on:
+      - elasticsearch
+
+  kibana:
+    container_name: ${KIBANA_CONTAINER_NAME}
+    hostname: ${KIBANA_CONTAINER_NAME}
+    image: ${KIBANA_IMAGE}
+    ports:
+      - "5601:5601"
+    volumes:
+      - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
+      - vol-kb:/usr/share/kibana/data
+    networks:
+      - bzn-network
+    restart: always  
+    depends_on:
+      - elasticsearch
+
+volumes:
+  vol-el: {}
+  vol-ls: {}
+  vol-kb: {}
+  
 networks:
   bzn-network:
     external: true
