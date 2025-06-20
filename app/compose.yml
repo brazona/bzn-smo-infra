@@ -21,7 +21,21 @@ services:
       - "0.0.0.0:4318:4318" # OTLP HTTP
     volumes:
       - "./jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
-      - "./config.yml:/etc/jaeger/config.yml"
+      - "./jaeger.yml:/etc/jaeger/config.yml"
+  hotrod:
+    container_name: ${JAEGER_EXEMPLO_CONTAINER_NAME}
+    hostname: ${JAEGER_EXEMPLO_CONTAINER_NAME}
+    image: ${JAEGER_EXEMPLO_IMAGE}  
+    ports:
+      - "8087:8080"
+      - "8083:8083"
+    command: ["all"]
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=${JAEGER_EXEMPLO_HOST}
+    networks:
+      - bzn-network
+    depends_on:
+      - jaeger      
   prometheus:
     container_name: ${PROMETHEUS_CONTAINER_NAME}
     hostname: ${PROMETHEUS_CONTAINER_NAME}
@@ -46,66 +60,6 @@ services:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD} 
     depends_on:
       - prometheus
-  elasticsearch:
-    container_name: ${ELASTIC_CONTAINER_NAME}
-    hostname: ${ELASTIC_CONTAINER_NAME}
-    image: ${ELASTIC_IMAGE}
-    ports:
-      - "9200:9200"
-      - "9300:9300"
-    volumes:
-      - vol-el-local:/usr/share/elasticsearch/data/
-      - ./elk-config/elasticsearch/elasticsearch.yml:/usr/share/elasticsearch/config/elasticsearch.yml
-    environment:
-      - discovery.type=single-node
-      - http.host=0.0.0.0
-      - transport.host=0.0.0.0
-      - xpack.security.enabled=false
-      - xpack.monitoring.enabled=false
-      - cluster.name=elasticsearch
-      - bootstrap.memory_lock=true
-    networks:
-      - bzn-network
-    restart: always  
-
-  logstash:
-    container_name: ${LOGSTASH_CONTAINER_NAME}
-    hostname: ${LOGSTASH_CONTAINER_NAME}
-    image: ${LOGSTASH_IMAGE}
-    ports:
-      - "5044:5044"
-      - "9600:9600"
-    volumes:
-      - ./elk-config/logstash/logstash.conf:/usr/share/logstash/pipeline/logstash.conf
-      - ./elk-config/logstash/logstash.yml:/usr/share/logstash/config/logstash.yml
-      - vol-ls-local:/usr/share/logstash/data
-
-    networks:
-      - bzn-network
-    restart: always  
-    depends_on:
-      - elasticsearch
-
-  kibana:
-    container_name: ${KIBANA_CONTAINER_NAME}
-    hostname: ${KIBANA_CONTAINER_NAME}
-    image: ${KIBANA_IMAGE}
-    ports:
-      - "5601:5601"
-    volumes:
-      - ./elk-config/kibana/kibana.yml:/usr/share/kibana/config/kibana.yml
-      - vol-kb-local:/usr/share/kibana/data
-    networks:
-      - bzn-network
-    restart: always  
-    depends_on:
-      - elasticsearch
-
-volumes:
-  vol-el-local: {}
-  vol-ls-local: {}
-  vol-kb-local: {}
-  
 networks:
   bzn-network:
     external: true

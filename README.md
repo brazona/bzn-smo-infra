@@ -18,7 +18,7 @@ Projeto que visa implementar os aplicativos de mercado para observabilidade e mo
 
 - Jaeger
 - OpenLens
-- Graylog 
+- Graylog
 – Dynatrace
 – DataDog
 - Elastic Stack (ELK)
@@ -32,11 +32,6 @@ Projeto que visa implementar os aplicativos de mercado para observabilidade e mo
 - https://www.jaegertracing.io/
 - https://hub.docker.com/r/jaegertracing/jaeger
 
-### ELASTIC STACK ( ELK )
-
-- https://hgmauri.medium.com/configurando-o-elasticsearch-e-kibana-no-docker-3f4679eb5feb
-- https://medium.com/@vosarat1995/elastic-stack-with-docker-getting-started-elasticsearch-kibana-and-filebeat-ebe75fd13041
-
 ### GRAFANA / PROMETHEUS
 
 - https://grafana.com/docs/grafana/latest/getting-started/get-started-grafana-prometheus/
@@ -45,7 +40,7 @@ Projeto que visa implementar os aplicativos de mercado para observabilidade e mo
 ### Build Compose
 
 ```bash
-git pull && docker compose --env-file .env up -d --build --force-recreate
+sudo git pull && sudo docker compose --env-file .env up -d --build --force-recreate
 ```
 
 ### Verifying Services
@@ -53,5 +48,3 @@ git pull && docker compose --env-file .env up -d --build --force-recreate
 Jaeger UI: http://localhost:16686
 Prometheus: http://localhost:9090
 Grafana: http://localhost:3000 (User: admin, Password: admin)
-
-Kibana: http://localhost:5601/
