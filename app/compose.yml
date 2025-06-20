@@ -102,9 +102,9 @@ services:
       - elasticsearch
 
 volumes:
-  vol-el-local:
-  vol-ls-local:
-  vol-kb-local:
+  vol-el-local: {}
+  vol-ls-local: {}
+  vol-kb-local: {}
   
 networks:
   bzn-network:
