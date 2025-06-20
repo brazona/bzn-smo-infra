@@ -20,7 +20,7 @@ services:
       - "0.0.0.0:4317:4317" # OTLP gRPC
       - "0.0.0.0:4318:4318" # OTLP HTTP
     volumes:
-      - "./jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+      - "./jaeger/ui.json:/etc/jaeger/jaeger-ui.json"
       - "./jaeger/conf.yml:/etc/jaeger/config.yml"
   hotrod:
     container_name: ${JAEGER_EXEMPLO_CONTAINER_NAME}
