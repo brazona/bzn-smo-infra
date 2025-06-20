@@ -1,6 +1,71 @@
 version: '3.0'
 
+
 services:
+  hotrod:
+    container_name: hotrod
+    hostname: hotrod
+    image: jaegertracing/example-hotrod:latest
+    ports:
+      - '8580:8080'
+      - '8083:8083'
+    command: ["-m","prometheus","all"]
+    networks:
+      - bzn-network
+    restart: always      
+  jaeger-collector:
+    container_name: jaeger-collector
+    hostname: jaeger-collector
+    image: jaegertracing/jaeger-collector
+    command:
+      - "--cassandra.keyspace=jaeger_v1_dc1"
+      - "--cassandra.servers=cassandra"
+      - "--collector.zipkin.host-port=9411"
+      - "--sampling.initial-sampling-probability=.5"
+      - "--sampling.target-samples-per-second=.01"
+    environment:
+      - SAMPLING_CONFIG_TYPE=adaptive
+    ports:
+      - "14269:14269"
+      - "14268:14268"
+      - "14250"
+      - "9411:9411"
+    restart: always
+    depends_on:
+      - cassandra-schema
+    networks:
+      - bzn-network      
+
+  jaeger-query:
+    container_name: jaeger-query
+    hostname: jaeger-query  
+    image: jaegertracing/jaeger-query
+    command: ["--cassandra.keyspace=jaeger_v1_dc1", "--cassandra.servers=cassandra"]
+    ports:
+      - "16686:16686"
+      - "16687"
+    restart: always
+    depends_on:
+      - cassandra-schema
+    networks:
+      - bzn-network      
+
+  cassandra:
+    image: cassandra:4.0
+    container_name: cassandra
+    hostname: cassandra
+    networks:
+      - bzn-network
+    restart: always      
+  cassandra-schema:
+    container_name: cassandra-schema
+    hostname: cassandra-schema    
+    image: jaegertracing/jaeger-cassandra-schema
+    depends_on:
+      - cassandra
+    networks:
+      - bzn-network
+    restart: always      
   jaeger:
     container_name: ${JAEGER_CONTAINER_NAME}
     hostname: ${JAEGER_CONTAINER_NAME}
@@ -12,23 +77,27 @@ services:
     - "host.docker.internal:host-gateway"  
     environment:
     - OTEL_ENABLED=true
+    - COLLECTOR_ZIPKIN_HOST_PORT=:9411
+    - COLLECTOR_OTLP_ENABLED=true     
     command: ["--config", "/etc/jaeger/config.yml"]
     ports:
-      - "0.0.0.0:16686:16686"
-      - "0.0.0.0:8888:8888"
-      - "0.0.0.0:8889:8889"
-      - "0.0.0.0:4317:4317" # OTLP gRPC
-      - "0.0.0.0:4318:4318" # OTLP HTTP
+      - "0.0.0.0:16687:16686"
+      - "0.0.0.0:8889:8888"
+      - "0.0.0.0:8890:8889"
+      - "0.0.0.0:4318:4317" # OTLP gRPC
+      - "0.0.0.0:4319:4318" # OTLP HTTP
+      - "0.0.0.0:9412:9411"
+      # OTLP HTTP
     volumes:
       - "./jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
       - "./jaeger.yml:/etc/jaeger/config.yml"
-  hotrod:
+  hotrod_1:
     container_name: ${JAEGER_EXEMPLO_CONTAINER_NAME}
     hostname: ${JAEGER_EXEMPLO_CONTAINER_NAME}
     image: ${JAEGER_EXEMPLO_IMAGE}  
     ports:
-      - "8087:8080"
-      - "8083:8083"
+      - "8099:8080"
+      - "8084:8083"
     command: ["all"]
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=${JAEGER_EXEMPLO_HOST}
