@@ -38,8 +38,7 @@ extensions:
     ui:
       config_file: /etc/jaeger/ui-config.json
       log_access: true
-      max_clock_skew_adjust: 0s
-
+      #max_clock_skew_adjust: 0s
   jaeger_storage:
     backends:
       some_store:
