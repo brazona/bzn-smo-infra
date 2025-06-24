@@ -4,25 +4,55 @@ services:
   jaeger:
     container_name: ${JAEGER_CONTAINER_NAME}
     hostname: ${JAEGER_CONTAINER_NAME}
-    image: ${JAEGER_IMAGE}  
+    image: jaegertracing/all-in-one:${JAEGER_VERSION:-latest}
     networks:
       - bzn-network
     restart: always
     extra_hosts:
     - "host.docker.internal:host-gateway"  
     environment:
-    - OTEL_ENABLED=true
-    command: ["--config", "/etc/jaeger/config.yml"]
+      - METRICS_STORAGE_TYPE=prometheus
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
+      - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
+      - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
+      - PROMETHEUS_QUERY_NORMALIZE_DURATION=true
     ports:
-      - "0.0.0.0:16686:16686"
-      - "0.0.0.0:8888:8888"
-      - "0.0.0.0:8889:8889"
-      - "0.0.0.0:4317:4317" # OTLP gRPC
-      - "0.0.0.0:4318:4318" # OTLP HTTP
+      - "16686:16686" # OTLP HTTP
     volumes:
-      - "./jaeger/config.yaml:/etc/jaeger/config.yml"
-      - "./jaeger/config-ui.json:/etc/jaeger/config-ui.json"
-      #- "./jaeger/conf.yml:/etc/jaeger/config.yml"
+      - "./jaeger/jaeger-ui.json:/etc/jaeger/jaeger-ui.json"
+    command: --query.ui-config /etc/jaeger/jaeger-ui.json
+  otel_collector:
+    restart: always
+    extra_hosts:
+    - "host.docker.internal:host-gateway"    
+    networks:
+      bzn-network:
+        # This is the host name used in Prometheus scrape configuration.
+        aliases: [spm_metrics_source]
+    image: otel/opentelemetry-collector-contrib:${OTEL_IMAGE_TAG:-0.112.0}
+    volumes:
+      - ./jaeger/otel-collector-config-connector.yml:/etc/otelcol/otel-collector-config.yml
+    command: --config /etc/otelcol/otel-collector-config.yml
+    depends_on:
+      - jaeger
+    ports:
+      - "8889:8889"
+
+  microsim:
+    networks:
+      - bzn-network
+    restart: always
+    extra_hosts:
+    - "host.docker.internal:host-gateway"        
+    image: yurishkuro/microsim:v0.5.0@sha256:b7ee2dee51d2c9fd94de08a80278cfbf5a144ad0f22efce50f3d3be15cbfa2c7
+    command: "-d 24h -s 500ms"
+    environment:
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel_collector:4318
+      - OTEL_EXPORTER_OTLP_INSECURE=true
+    depends_on:
+      - otel_collector
+
   hotrod:
     container_name: ${JAEGER_EXEMPLO_CONTAINER_NAME}
     hostname: ${JAEGER_EXEMPLO_CONTAINER_NAME}
