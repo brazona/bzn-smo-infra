@@ -12,8 +12,8 @@ services:
     - "host.docker.internal:host-gateway"  
     environment:
       - METRICS_STORAGE_TYPE=prometheus
-      #- PROMETHEUS_SERVER_URL=http://prometheus:9090
-      - PROMETHEUS_SERVER_URL=http://${PROMETHEUS_CONTAINER_NAME}:${PROMETHEUS_PORT_INT}      
+      - PROMETHEUS_SERVER_URL=http://prometheus:9090
+      #- PROMETHEUS_SERVER_URL=http://${PROMETHEUS_CONTAINER_NAME}:${PROMETHEUS_PORT_INT}
       - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
       - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
       - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
@@ -53,8 +53,8 @@ services:
       - bzn-network
     command: "-d 24h -s 500ms"
     environment:
-      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://otel_collector:4318
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${OTEL_CONTAINER_NAME}:${OTEL_PORT_INT}
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel_collector:4318
+      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://${OTEL_CONTAINER_NAME}:${OTEL_PORT_INT}
       - OTEL_EXPORTER_OTLP_INSECURE=true
     depends_on:
       - otel_collector
@@ -67,8 +67,8 @@ services:
       - "${JAEGER_EXEMPLO_PORT_EXT}:${JAEGER_EXEMPLO_PORT_INT}"            
     command: ["all"]
     environment:
-      # - OTEL_EXPORTER_OTLP_ENDPOINT=${JAEGER_EXEMPLO_HOST} #http://jaeger-local:4318
-      - OTEL_EXPORTER_OTLP_ENDPOINT=http://${JAEGER_CONTAINER_NAME}:${JAEGER_PORT_INT}
+       - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger-local:4318
+      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://${JAEGER_CONTAINER_NAME}:${JAEGER_PORT_INT}
     networks:
       - bzn-network
     depends_on:
