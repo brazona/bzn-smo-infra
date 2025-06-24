@@ -21,6 +21,7 @@ services:
       - "0.0.0.0:4318:4318" # OTLP HTTP
     volumes:
       - "./jaeger/config.yaml:/etc/jaeger/config.yml"
+      - "./jaeger/config-ui.json:/etc/jaeger/config-ui.json"
       #- "./jaeger/conf.yml:/etc/jaeger/config.yml"
   hotrod:
     container_name: ${JAEGER_EXEMPLO_CONTAINER_NAME}
