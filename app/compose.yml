@@ -13,7 +13,6 @@ services:
     environment:
       - METRICS_STORAGE_TYPE=prometheus
       - PROMETHEUS_SERVER_URL=http://prometheus:9090
-      #- PROMETHEUS_SERVER_URL=http://${PROMETHEUS_CONTAINER_NAME}:${PROMETHEUS_PORT_INT}
       - PROMETHEUS_QUERY_NAMESPACE=${PROMETHEUS_QUERY_NAMESPACE:-}
       - PROMETHEUS_QUERY_DURATION_UNIT=${PROMETHEUS_QUERY_DURATION_UNIT:-}
       - PROMETHEUS_QUERY_NORMALIZE_CALLS=true
@@ -40,7 +39,6 @@ services:
     depends_on:
       - jaeger
     ports:
-      #- "8889:8889"
       - "${OTEL_PORT_EXT}:${OTEL_PORT_INT}" 
   microsim:
     container_name: ${MICROSIM_CONTAINER_NAME}
@@ -54,7 +52,6 @@ services:
     command: "-d 24h -s 500ms"
     environment:
       - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel_collector:4318
-      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://${OTEL_CONTAINER_NAME}:${OTEL_PORT_INT}
       - OTEL_EXPORTER_OTLP_INSECURE=true
     depends_on:
       - otel_collector
@@ -68,7 +65,6 @@ services:
     command: ["all"]
     environment:
        - OTEL_EXPORTER_OTLP_ENDPOINT=http://jaeger-local:4318
-      #- OTEL_EXPORTER_OTLP_ENDPOINT=http://${JAEGER_CONTAINER_NAME}:${JAEGER_PORT_INT}
     networks:
       - bzn-network
     depends_on:
@@ -83,7 +79,6 @@ services:
     volumes:
       - "./prometheus/conf.yml:/etc/prometheus/prometheus.yml"
     ports:
-      # - "9090:9090"
       - "${PROMETHEUS_PORT_EXT}:${PROMETHEUS_PORT_INT}" 
   grafana:
     container_name: ${GRAFANA_CONTAINER_NAME}
@@ -93,7 +88,6 @@ services:
       - bzn-network
     restart: always
     ports:
-      # - "3000:3000"
      - "${GRAFANA_PORT_EXT}:${GRAFANA_PORT_INT}" 
     environment:
       - GF_SECURITY_ADMIN_PASSWORD=${GF_SECURITY_ADMIN_PASSWORD} 
@@ -101,6 +95,4 @@ services:
       - prometheus
 networks:
   bzn-network:
-    external: true
-volumes:
-  vol-jaeger: {}     
+    external: true   
