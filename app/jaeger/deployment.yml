@@ -1,0 +1,109 @@
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: jaeger-pvc
+  namespace: infra
+spec:
+  accessModes:
+    - ReadWriteOnce
+  storageClassName: longhorn
+  resources:
+    requests:
+      storage: 1Gi
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: jaeger-server
+  namespace: infra
+  labels:
+    app: jaeger-server-api
+spec:
+  selector:
+    matchLabels:
+      app: jaeger-server-api
+  replicas: 1
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 0
+  template:
+    metadata:
+      labels:
+        app: jaeger-server-api
+    spec:
+      imagePullSecrets:
+        - name: pipeline-docker-registry
+      containers:
+      - name: jaeger-server
+        imagePullPolicy: Always
+        ports:
+        - containerPort: ${PORT_INT}
+          protocol: TCP
+        env:
+          - name: METRICS_STORAGE_TYPE
+            valueFrom:
+              configMapKeyRef:
+                name: bzn-smo-infra-jaeger         
+                key: METRICS_STORAGE_TYPE
+          - name: PROMETHEUS_SERVER_URL
+            valueFrom:
+              configMapKeyRef:
+                name: bzn-smo-infra-jaeger         
+                key: PROMETHEUS_SERVER_URL
+          - name: PROMETHEUS_QUERY_NORMALIZE_CALLS
+            valueFrom:
+              configMapKeyRef:
+                name: bzn-smo-infra-jaeger         
+                key: PROMETHEUS_QUERY_NORMALIZE_CALLS
+          - name: PROMETHEUS_QUERY_NORMALIZE_DURATION
+            valueFrom:
+              configMapKeyRef:
+                name: bzn-smo-infra-jaeger         
+                key: PROMETHEUS_QUERY_NORMALIZE_DURATION                
+        volumeMounts:
+          - name: jaeger-vol
+            mountPath: /var/lib/jaeger
+      restartPolicy: Always
+      securityContext:
+        runAsUser: 0
+      terminationGracePeriodSeconds: 30
+      volumes:
+      - name: jaeger-vol
+        persistentVolumeClaim:
+          claimName: jaeger-pvc
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: jaeger-server-service
+  namespace: infra
+spec:
+  selector:
+    app: jaeger-server-api
+  type: ClusterIP
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  namespace: infra
+  name: jaeger-server-ingress
+  annotations:
+    allow.http: "true"
+spec:
+  rules:
+    - host: $DNS
+      http:
+        paths:
+          - path: /
+            backend:
+              serviceName: jaeger-server-service
+              servicePort: 80
