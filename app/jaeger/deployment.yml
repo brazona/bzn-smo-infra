@@ -1,18 +1,4 @@
 ---
-
-apiVersion: v1
-kind: PersistentVolumeClaim
-metadata:
-  name: jaeger-pvc
-  namespace: infra
-spec:
-  accessModes:
-    - ReadWriteOnce
-  storageClassName: longhorn
-  resources:
-    requests:
-      storage: 1Gi
----
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -64,17 +50,10 @@ spec:
               configMapKeyRef:
                 name: bzn-smo-infra-jaeger         
                 key: PROMETHEUS_QUERY_NORMALIZE_DURATION                
-        volumeMounts:
-          - name: jaeger-vol
-            mountPath: /var/lib/jaeger
       restartPolicy: Always
       securityContext:
         runAsUser: 0
       terminationGracePeriodSeconds: 30
-      volumes:
-      - name: jaeger-vol
-        persistentVolumeClaim:
-          claimName: jaeger-pvc
 ---
 kind: Service
 apiVersion: v1
