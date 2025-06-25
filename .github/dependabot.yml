@@ -6,15 +6,10 @@
 version: 2
 updates:
   - package-ecosystem: "composer" # See documentation for possible values
-    directory: "app" # Location of package manifests
+    directory: "app/**" # Location of package manifests
     schedule:
       interval: "monthly"
   - package-ecosystem: "docker" # See documentation for possible values
-    directory: "app" # Location of package manifests
-    schedule:
-      interval: "monthly"
-
-  - package-ecosystem: "maven" # See documentation for possible values
-    directory: "app" # Location of package manifests
+    directory: "app/**" # Location of package manifests
     schedule:
       interval: "monthly"
