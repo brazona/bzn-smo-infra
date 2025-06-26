@@ -1,0 +1,29 @@
+name: Pipeline Deploy GRAFANA [SMO]
+on:
+  pull_request:
+    paths:
+      - 'app/grafana/deployment.yml'
+      - '.github/workflows/bzn-smo-infra-grafana.yml'   
+    branches:
+      - 'main'
+      - 'develop'
+      - 'release/**'
+  push:
+    paths:
+      - 'app/grafana/deployment.yml'
+      - '.github/workflows/bzn-smo-infra-grafana.yml'  
+    branches:
+      - 'main'    
+  workflow_dispatch:
+jobs:
+  deploy-app:
+    name: Pipeline Deploy
+    permissions: write-all
+    uses: brazona/bzn-pgc-infra/.github/workflows/pipeline-deploy.yml@main
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+    with:
+      environment_name: INFRASTRUCTURE
+      path_app: app/grafana
+      docker_image_tag: latest
+      environment_variable_name: ${{vars.GRAFANA_INFRASTRUCTURE_ENV }}
