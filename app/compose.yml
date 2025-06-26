@@ -34,7 +34,7 @@ services:
         # This is the host name used in Prometheus scrape configuration.
         aliases: [spm_metrics_source]
     volumes:
-      - ./jaeger/otel-collector-config-connector.yml:/etc/otelcol/otel-collector-config.yml
+      - ./otel-collector/otel-collector-config-connector.yml:/etc/otelcol/otel-collector-config.yml
     command: --config /etc/otelcol/otel-collector-config.yml
     depends_on:
       - jaeger

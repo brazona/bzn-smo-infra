@@ -1,0 +1,29 @@
+name: Pipeline Deploy PROMETHEUS [SMO]
+on:
+  pull_request:
+    paths:
+      - 'app/prometheus/deployment.yml'
+      - '.github/workflows/prometheus.yml'   
+    branches:
+      - 'main'
+      - 'develop'
+      - 'release/**'
+  push:
+    paths:
+      - 'app/prometheus/deployment.yml'
+      - '.github/workflows/prometheus.yml'  
+    branches:
+      - 'main'    
+  workflow_dispatch:
+jobs:
+  deploy-app:
+    name: Pipeline Deploy
+    permissions: write-all
+    uses: brazona/bzn-pgc-infra/.github/workflows/pipeline-deploy.yml@main
+    secrets:
+      KUBECONFIG: ${{ secrets.KUBECONFIG }}
+    with:
+      environment_name: INFRASTRUCTURE
+      path_app: app/prometheus
+      docker_image_tag: latest
+      environment_variable_name: PROMETHEUS_INFRASTRUCTURE_ENV   
