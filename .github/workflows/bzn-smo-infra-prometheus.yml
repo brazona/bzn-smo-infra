@@ -26,4 +26,4 @@ jobs:
       environment_name: INFRASTRUCTURE
       path_app: app/prometheus
       docker_image_tag: latest
-      environment_variable_name: PROMETHEUS_INFRASTRUCTURE_ENV   
+      environment_variable_name: vars.PROMETHEUS_INFRASTRUCTURE_ENV   
