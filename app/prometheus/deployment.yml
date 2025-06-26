@@ -28,18 +28,16 @@ spec:
         image: ${IMAGE}
         imagePullPolicy: Always
         volumeMounts:
-        - name: config-vol
-          mountPath: /etc/prometheus/prometheus.yml
+          - name: config-volume
+            mountPath: /etc/prometheus
         ports:
         - containerPort: ${PORT_INT}
           protocol: TCP
       volumes:
-      - name: config-vol
-        configMap:
-          name: bzn-smo-infra-prometheus
-          items:
-            - key: conf.yml
-              path: conf.yml                
+        - name: config-volume
+          configMap:
+            name: bzn-smo-infra-prometheus
+            defaultMode: 420               
       securityContext:
         runAsUser: 0
       terminationGracePeriodSeconds: 30
