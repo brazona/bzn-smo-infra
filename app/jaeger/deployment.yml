@@ -3,7 +3,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: jaeger-server
-  namespace: infra
+  namespace: ${NAMESPACE}
   labels:
     app: jaeger-server-api
 spec:
@@ -25,6 +25,7 @@ spec:
         - name: pipeline-docker-registry
       containers:
       - name: jaeger-server
+        image: ${IMAGE}
         imagePullPolicy: Always
         ports:
         - containerPort: ${PORT_INT}
@@ -59,7 +60,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: jaeger-server-service
-  namespace: infra
+  namespace: ${NAMESPACE}
 spec:
   selector:
     app: jaeger-server-api
@@ -73,7 +74,7 @@ spec:
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  namespace: infra
+  namespace: ${NAMESPACE}
   name: jaeger-server-ingress
   annotations:
     allow.http: "true"
