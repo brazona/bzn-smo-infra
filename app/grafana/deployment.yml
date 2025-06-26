@@ -2,14 +2,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: jaeger-server
+  name: grafana-server
   namespace: ${NAMESPACE}
   labels:
-    app: jaeger-server-api
+    app: grafana-server-api
 spec:
   selector:
     matchLabels:
-      app: jaeger-server-api
+      app: grafana-server-api
   replicas: 1
   strategy:
     type: RollingUpdate
@@ -19,38 +19,23 @@ spec:
   template:
     metadata:
       labels:
-        app: jaeger-server-api
+        app: grafana-server-api
     spec:
       imagePullSecrets:
         - name: pipeline-docker-registry
       containers:
-      - name: jaeger-server
+      - name: grafana-server
         image: ${IMAGE}
         imagePullPolicy: Always
         ports:
         - containerPort: ${PORT_INT}
           protocol: TCP
         env:
-          - name: METRICS_STORAGE_TYPE
+          - name: GF_SECURITY_ADMIN_PASSWORD
             valueFrom:
-              configMapKeyRef:
-                name: bzn-smo-infra-jaeger         
-                key: METRICS_STORAGE_TYPE
-          - name: PROMETHEUS_SERVER_URL
-            valueFrom:
-              configMapKeyRef:
-                name: bzn-smo-infra-jaeger         
-                key: PROMETHEUS_SERVER_URL
-          - name: PROMETHEUS_QUERY_NORMALIZE_CALLS
-            valueFrom:
-              configMapKeyRef:
-                name: bzn-smo-infra-jaeger         
-                key: PROMETHEUS_QUERY_NORMALIZE_CALLS
-          - name: PROMETHEUS_QUERY_NORMALIZE_DURATION
-            valueFrom:
-              configMapKeyRef:
-                name: bzn-smo-infra-jaeger         
-                key: PROMETHEUS_QUERY_NORMALIZE_DURATION                
+              secretKeyRef:
+                name: bzn-smo-infra-grafana         
+                key: GF_SECURITY_ADMIN_PASSWORD 
       restartPolicy: Always
       securityContext:
         runAsUser: 0
@@ -59,11 +44,11 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: jaeger-server-service
+  name: grafana-server-service
   namespace: ${NAMESPACE}
 spec:
   selector:
-    app: jaeger-server-api
+    app: grafana-server-api
   type: ClusterIP
   ports:
     - protocol: TCP
@@ -75,7 +60,7 @@ apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
   namespace: ${NAMESPACE}
-  name: jaeger-server-ingress
+  name: grafana-server-ingress
   annotations:
     allow.http: "true"
 spec:
@@ -85,5 +70,5 @@ spec:
         paths:
           - path: /
             backend:
-              serviceName: jaeger-server-service
+              serviceName: grafana-server-service
               servicePort: 80
