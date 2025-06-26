@@ -26,4 +26,4 @@ jobs:
       environment_name: INFRASTRUCTURE
       path_app: app/jaeger
       docker_image_tag: latest
-      environment_variable_name: JAEGER_INFRASTRUCTURE_ENV   
+      environment_variable_name: ${{vars.JAEGER_INFRASTRUCTURE_ENV }}
