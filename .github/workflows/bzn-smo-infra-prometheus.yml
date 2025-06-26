@@ -3,7 +3,7 @@ on:
   pull_request:
     paths:
       - 'app/prometheus/deployment.yml'
-      - '.github/workflows/prometheus.yml'   
+      - '.github/workflows/bzn-smo-infra-prometheus.yml'   
     branches:
       - 'main'
       - 'develop'
@@ -11,7 +11,7 @@ on:
   push:
     paths:
       - 'app/prometheus/deployment.yml'
-      - '.github/workflows/prometheus.yml'  
+      - '.github/workflows/bzn-smo-infra-prometheus.yml'  
     branches:
       - 'main'    
   workflow_dispatch:
