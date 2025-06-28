@@ -112,10 +112,10 @@ docker compose --env-file .env up -d --build --force-recreate
 
 ### Verifying Services
 
-Jaeger UI: http://localhost:16686
-Hotrod UI: http://localhost:8087
-Prometheus: http://localhost:9090
-Grafana: http://localhost:3000 (User: admin, Password: admin)
+Jaeger UI: http://localhost:16686 </br>
+Hotrod UI: http://localhost:8087 </br>
+Prometheus: http://localhost:9090 </br>
+Grafana: http://localhost:3000 </br>
 
 ## Licença
 
